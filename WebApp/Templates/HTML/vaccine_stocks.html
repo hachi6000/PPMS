@@ -1,0 +1,474 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Medicine Stock - Barangay Management</title>
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
+
+  <style>
+    * {
+      margin: 0 !important;
+      padding: 0 !important;
+      box-sizing: border-box !important;
+      font-family: 'Poppins', 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif !important;
+    }
+
+    body {
+      font-family: 'Poppins', 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif !important;
+      color: #333 !important;
+      padding: 20px !important;
+      min-height: 100vh !important;
+      margin: 0 !important;
+      overflow-x: hidden !important;
+      font-size: 14px !important;
+      font-weight: 400 !important;
+    }
+
+    .video-background {
+      position: fixed !important;
+      top: 0 !important;
+      left: 0 !important;
+      width: 100% !important;
+      height: 100% !important;
+      z-index: -1 !important;
+      overflow: hidden !important;
+    }
+
+    .video-background video {
+      width: 100vw !important;
+      height: 100vh !important;
+      object-fit: cover !important;
+      object-position: center !important;
+    }
+
+    .topbar {
+      position: relative !important;
+      height: 100px !important;
+      background-color: #1e1e2f !important;
+      border-radius: 10px !important;
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1) !important;
+      margin: 0 auto 30px auto !important;
+      max-width: 1100px !important;
+    }
+
+    .logo-title {
+      position: absolute !important;
+      left: 50% !important;
+      top: 50% !important;
+      transform: translate(-50%, -50%) !important;
+      font-size: 20px !important;
+      font-weight: 600 !important;
+      color: white !important;
+      white-space: nowrap !important;
+    }
+
+    .back-button {
+      position: absolute !important;
+      left: 20px !important;
+      top: 50% !important;
+      transform: translateY(-50%) !important;
+      width: 56px !important;
+      height: 56px !important;
+      background-color: transparent !important;
+      border: none !important;
+      cursor: pointer !important;
+      text-decoration: none !important;
+      display: flex !important;
+      align-items: center !important;
+      justify-content: center !important;
+    }
+
+    .back-button:before,
+    .back-button:after {
+      content: "" !important;
+      position: absolute !important;
+      border-radius: 50% !important;
+      inset: 7px !important;
+    }
+
+    .back-button:before {
+      border: 4px solid #f0eeef !important;
+      transition: opacity 0.4s, transform 0.5s !important;
+    }
+
+    .back-button:after {
+      border: 4px solid #96daf0 !important;
+      transform: scale(1.3) !important;
+      opacity: 0 !important;
+      transition: opacity 0.4s, transform 0.5s !important;
+    }
+
+    .back-button:hover:before {
+      opacity: 0 !important;
+      transform: scale(0.7) !important;
+    }
+
+    .back-button:hover:after {
+      opacity: 1 !important;
+      transform: scale(1) !important;
+    }
+
+    .back-arrow {
+      width: 20px !important;
+      height: 20px !important;
+      fill: #f0eeef !important;
+      transform: rotate(180deg) !important;
+    }
+
+    .container {
+      max-width: 1100px !important;
+      margin: 0 auto !important;
+      background: white !important;
+      padding: 30px !important;
+      border-radius: 12px !important;
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08) !important;
+    }
+
+    .header-content {
+      text-align: center !important;
+      margin-bottom: 30px !important;
+    }
+
+    .header-content h1 {
+      font-size: 18px !important;
+      font-weight: 400 !important;
+      color: #333 !important;
+      text-transform: uppercase !important;
+      letter-spacing: 2px !important;
+      font-family: 'Poppins', sans-serif !important;
+      margin-bottom: 10px !important;
+    }
+
+    .header-content p {
+      font-size: 14px !important;
+      color: #666 !important;
+      font-weight: 400 !important;
+    }
+
+    .stats-grid {
+      display: grid !important;
+      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)) !important;
+      gap: 20px !important;
+      margin-bottom: 30px !important;
+    }
+
+    .stat-card {
+      background-color: #f4f6f8 !important;
+      border: 1px solid #e0e4e7 !important;
+      border-radius: 12px !important;
+      padding: 25px !important;
+      text-align: center !important;
+      box-shadow: 0 4px 10px rgba(0, 0, 0, 0.05) !important;
+      transition: all 0.3s ease !important;
+    }
+
+    .stat-card:hover {
+      background-color: #1565c0 !important;
+      color: white !important;
+      border-color: #1565c0 !important;
+      transform: translateY(-3px) !important;
+      box-shadow: 0 8px 20px rgba(21, 101, 192, 0.3) !important;
+    }
+
+    .stat-number {
+      font-size: 24px !important;
+      font-weight: 600 !important;
+      margin-bottom: 8px !important;
+    }
+
+    .stat-label {
+      font-size: 14px !important;
+      font-weight: 400 !important;
+    }
+
+    .form-container {
+      margin-bottom: 30px !important;
+    }
+
+    .stock-form {
+      background-color: #f8f9fa !important;
+      padding: 25px !important;
+      border-radius: 12px !important;
+      border: 1px solid #e6e6e6 !important;
+    }
+
+    .stock-form h3 {
+      font-size: 16px !important;
+      font-weight: 400 !important;
+      color: #333 !important;
+      text-transform: uppercase !important;
+      letter-spacing: 1px !important;
+      margin-bottom: 20px !important;
+      text-align: center !important;
+    }
+
+    .stock-form label {
+      display: block !important;
+      font-weight: 400 !important;
+      margin-bottom: 8px !important;
+      margin-top: 15px !important;
+      color: #333 !important;
+      font-size: 14px !important;
+    }
+
+    .stock-form label:first-of-type {
+      margin-top: 0 !important;
+    }
+
+    .stock-form select,
+    .stock-form input {
+      width: 100% !important;
+      padding: 12px 15px !important;
+      border-radius: 8px !important;
+      border: 1px solid #e6e6e6 !important;
+      font-size: 14px !important;
+      font-family: 'Poppins', sans-serif !important;
+      background-color: white !important;
+      color: #333 !important;
+      font-weight: 400 !important;
+    }
+
+    .stock-form select:focus,
+    .stock-form input:focus {
+      outline: none !important;
+      border-color: #5bdab3 !important;
+      box-shadow: 0 0 0 3px rgba(91, 218, 179, 0.15) !important;
+    }
+
+    .stock-form button {
+      background-color: #5bdab3 !important;
+      color: #1e1e2f !important;
+      padding: 14px 20px !important;
+      border: none !important;
+      border-radius: 8px !important;
+      font-weight: 500 !important;
+      font-size: 14px !important;
+      cursor: pointer !important;
+      transition: all 0.3s ease !important;
+      box-shadow: 0 2px 6px rgba(91, 218, 179, 0.3) !important;
+      margin-top: 20px !important;
+      width: 100% !important;
+    }
+
+    .stock-form button:hover {
+      background-color: #1565c0 !important;
+      color: white !important;
+      transform: translateY(-2px) !important;
+      box-shadow: 0 4px 12px rgba(21, 101, 192, 0.3) !important;
+    }
+
+    .table-container {
+      margin-bottom: 30px !important;
+    }
+
+    table {
+      width: 100% !important;
+      border-collapse: collapse !important;
+      font-size: 14px !important;
+      background: white !important;
+      border-radius: 8px !important;
+      overflow: hidden !important;
+      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05) !important;
+    }
+
+    table th,
+    table td {
+      border: 1px solid #e6e6e6 !important;
+      padding: 12px 16px !important;
+      text-align: left !important;
+      font-size: 14px !important;
+      color: #333 !important;
+      font-weight: 400 !important;
+    }
+
+    table th {
+      background-color: #f8f9fa !important;
+      font-weight: 500 !important;
+      border-bottom: 2px solid #e6e6e6 !important;
+    }
+
+    table tr:hover td {
+      background-color: #f8f9fa !important;
+    }
+
+    .vaccine-name {
+      font-weight: 500 !important;
+    }
+
+    .stock-badge {
+      padding: 4px 12px !important;
+      border-radius: 20px !important;
+      font-size: 12px !important;
+      font-weight: 500 !important;
+      text-transform: uppercase !important;
+    }
+
+    .stock-out {
+      background-color: #ff4757 !important;
+      color: white !important;
+    }
+
+    .stock-low {
+      background-color: #ffa502 !important;
+      color: white !important;
+    }
+
+    .stock-medium {
+      background-color: #3742fa !important;
+      color: white !important;
+    }
+
+    .stock-high {
+      background-color: #2ed573 !important;
+      color: white !important;
+    }
+
+    .refresh-btn {
+      background-color: #6c757d !important;
+      color: white !important;
+      padding: 14px 20px !important;
+      border: none !important;
+      border-radius: 8px !important;
+      font-weight: 500 !important;
+      font-size: 14px !important;
+      cursor: pointer !important;
+      transition: all 0.3s ease !important;
+      box-shadow: 0 2px 6px rgba(108, 117, 125, 0.3) !important;
+      width: 100% !important;
+    }
+
+    .refresh-btn:hover {
+      background-color: #5a6268 !important;
+      transform: translateY(-2px) !important;
+      box-shadow: 0 4px 12px rgba(90, 98, 104, 0.3) !important;
+    }
+
+    @media (max-width: 768px) {
+      .stats-grid {
+        grid-template-columns: 1fr !important;
+      }
+
+      .stock-form {
+        padding: 20px !important;
+      }
+
+      table {
+        font-size: 12px !important;
+      }
+
+      table th,
+      table td {
+        padding: 8px !important;
+      }
+    }
+  </style>
+</head>
+<body>
+  <!-- Video Background -->
+  <div class="video-background">
+    <video autoplay muted loop playsinline>
+      <source src="{% static 'media/vidbg.mp4' %}" type="video/mp4">
+      Your browser does not support the video tag.
+    </video>
+  </div>
+
+  <div class="topbar">
+    <a href="{% url 'dashboard' %}" class="back-button">
+      <svg class="back-arrow" viewBox="0 0 46 40" xmlns="http://www.w3.org/2000/svg">
+        <path d="M46 20.038c0-.7-.3-1.5-.8-2.1l-16-17c-1.1-1-3.2-1.4-4.4-.3-1.2 1.1-1.2 3.3 0 4.4l11.3 11.9H3c-1.7 0-3 1.3-3 3s1.3 3 3 3h33.1l-11.3 11.9c-1 1-1.2 3.3 0 4.4 1.2 1.1 3.3.8 4.4-.3l16-17c.5-.5.8-1.1.8-1.9z"></path>
+      </svg>
+    </a>
+    <div class="logo-title">PPMS CLUSTER 4 IMUS CITY (ANABU)</div>
+  </div>
+
+  <div class="container">
+    <!-- Centered heading -->
+    <div class="header-content">
+      <h1>Medicinal Stock Management</h1>
+      <p>Barangay Health Center Inventory</p>
+    </div>
+
+    <div class="stats-grid">
+      <div class="stat-card"><div class="stat-number">{{ total_vaccines }}</div><div class="stat-label">Total Items</div></div>
+      <div class="stat-card"><div class="stat-number">{{ total_stock }}</div><div class="stat-label">Total Stock</div></div>
+      <div class="stat-card"><div class="stat-number">{{ available_stock }}</div><div class="stat-label">Available Stock</div></div>
+      <div class="stat-card"><div class="stat-number">{{ low_stock_count }}</div><div class="stat-label">Low Stock Alerts</div></div>
+    </div>
+
+    <!-- Add/Update Stock Form -->
+    <div class="form-container">
+      <form class="stock-form" method="POST" action="{% url 'add_stock' %}">
+        {% csrf_token %}
+        <h3>Add / Update Stock</h3>
+
+        <label for="vaccine_name">Medicine/Vaccine Name:</label>
+        <select name="vaccine_name" required>
+          <option value="">Select Medicine/Vaccine</option>
+          <optgroup label="Vaccines">
+            <option value="BCG">BCG</option>
+            <option value="Hepatitis B">Hepatitis B</option>
+            <option value="Pentavalent (DPT-Hep B HiB)">Pentavalent (DPT-Hep B HiB)</option>
+            <option value="Oral Polio Vaccine">Oral Polio Vaccine</option>
+            <option value="Inactivated Polio Vaccine">Inactivated Polio Vaccine</option>
+            <option value="Pneumococcal Conjugate Vaccine">Pneumococcal Conjugate Vaccine</option>
+            <option value="Measles Mumps and Rubella">Measles Mumps and Rubella</option>
+          </optgroup>
+          <optgroup label="Medicines & Supplements">
+            <option value="Deworming Tablets">Deworming Tablets</option>
+            <option value="Vitamin A Capsules">Vitamin A Capsules</option>
+          </optgroup>
+        </select>
+
+        <label for="quantity">Quantity to Add:</label>
+        <input type="number" name="quantity" min="1" required>
+
+        <button type="submit">Add Stock</button>
+      </form>
+    </div>
+
+    <!-- Stock Table -->
+    <div class="table-container">
+      <table id="vaccineTable">
+        <thead>
+          <tr>
+            <th>Medicine/Vaccine Name</th>
+            <th>Total Stock</th>
+            <th>Available Stock</th>
+            <th>Stock Status</th>
+            <th>Last Updated</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for vaccine in vaccine_stocks %}
+          <tr>
+            <td class="vaccine-name">{{ vaccine.vaccine_name }}</td>
+            <td><strong>{{ vaccine.total_stock }}</strong></td>
+            <td><strong>{{ vaccine.available_stock }}</strong></td>
+            <td>
+              {% if vaccine.available_stock == 0 %}
+                <span class="stock-badge stock-out">Out of Stock</span>
+              {% elif vaccine.available_stock < 10 %}
+                <span class="stock-badge stock-low">Low Stock</span>
+              {% elif vaccine.available_stock < 50 %}
+                <span class="stock-badge stock-medium">Medium Stock</span>
+              {% else %}
+                <span class="stock-badge stock-high">Good Stock</span>
+              {% endif %}
+            </td>
+            <td class="last-updated">{{ vaccine.last_updated|date:"M d, Y - h:i A" }}</td>
+          </tr>
+          {% empty %}
+          <tr><td colspan="5">No medicine/vaccine stock data available.</td></tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+
+    <button class="refresh-btn" onclick="refreshData()">Refresh Data</button>
+  </div>
+
+  <script src="{% static 'javascript/vaccine_stocks.js' %}"></script>
+</body>
+</html>

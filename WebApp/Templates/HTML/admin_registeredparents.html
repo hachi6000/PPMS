@@ -1,0 +1,407 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  {% load static %}
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Registered Parents</title>
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
+  
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+      font-family: 'Poppins', 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    }
+
+    body {
+      font-family: 'Poppins', 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif !important;
+      color: #333 !important;
+      padding: 20px !important;
+      min-height: 100vh !important;
+      margin: 0 !important;
+      overflow-x: hidden !important;
+      font-size: 14px !important;
+      font-weight: 400 !important;
+    }
+
+    .video-background {
+      position: fixed !important;
+      top: 0 !important;
+      left: 0 !important;
+      width: 100% !important;
+      height: 100% !important;
+      z-index: -1 !important;
+      overflow: hidden !important;
+    }
+
+    .video-background video {
+      width: 100vw !important;
+      height: 100vh !important;
+      object-fit: cover !important;
+      object-position: center !important;
+    }
+
+    .topbar {
+      position: relative !important;
+      height: 100px !important;
+      background-color: #1e1e2f !important;
+      border-radius: 10px !important;
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1) !important;
+      margin: 0 auto 30px auto !important;
+      max-width: 1100px !important;
+    }
+
+    .logo-title {
+      position: absolute !important;
+      left: 50% !important;
+      top: 50% !important;
+      transform: translate(-50%, -50%) !important;
+      font-size: 20px !important;
+      font-weight: 600 !important;
+      color: white !important;
+      white-space: nowrap !important;
+    }
+
+    .rtn-btn {
+      position: absolute !important;
+      left: 20px !important;
+      top: 50% !important;
+      transform: translateY(-50%) !important;
+      width: 56px !important;
+      height: 56px !important;
+      background-color: transparent !important;
+      border: none !important;
+      cursor: pointer !important;
+    }
+
+    .rtn-btn:before,
+    .rtn-btn:after {
+      content: "" !important;
+      position: absolute !important;
+      border-radius: 50% !important;
+      inset: 7px !important;
+    }
+
+    .rtn-btn:before {
+      border: 4px solid #f0eeef !important;
+      transition: opacity 0.4s, transform 0.5s !important;
+    }
+
+    .rtn-btn:after {
+      border: 4px solid #96daf0 !important;
+      transform: scale(1.3) !important;
+      opacity: 0 !important;
+      transition: opacity 0.4s, transform 0.5s !important;
+    }
+
+    .rtn-btn:hover:before {
+      opacity: 0 !important;
+      transform: scale(0.7) !important;
+    }
+
+    .rtn-btn:hover:after {
+      opacity: 1 !important;
+      transform: scale(1) !important;
+    }
+
+    .button-box {
+      display: flex !important;
+      position: absolute !important;
+      top: 0 !important;
+      left: 0 !important;
+    }
+
+    .button-elem {
+      display: block !important;
+      width: 20px !important;
+      height: 20px !important;
+      margin: 17px 18px 0 18px !important;
+      transform: rotate(180deg) !important;
+      fill: #f0eeef !important;
+    }
+
+    .top-icons {
+      position: absolute !important;
+      right: 20px !important;
+      top: 50% !important;
+      transform: translateY(-50%) !important;
+    }
+
+    .container {
+      max-width: 1100px !important;
+      margin: 0 auto !important;
+      background: white !important;
+      padding: 30px !important;
+      border-radius: 12px !important;
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08) !important;
+    }
+
+    h2 {
+      font-size: 18px !important;
+      margin-bottom: 25px !important;
+      font-weight: 400 !important;
+      color: #333 !important;
+      text-transform: uppercase !important;
+      letter-spacing: 2px !important;
+      font-family: 'Poppins', sans-serif !important;
+      text-align: center !important;
+    }
+
+    .search-section {
+      display: flex !important;
+      justify-content: center !important;
+      gap: 15px !important;
+      margin-bottom: 25px !important;
+      align-items: center !important;
+      flex-wrap: wrap !important;
+    }
+
+    .search-input {
+      padding: 12px 15px !important;
+      border-radius: 8px !important;
+      border: 1px solid #e6e6e6 !important;
+      font-size: 14px !important;
+      font-family: 'Poppins', sans-serif !important;
+      color: #333 !important;
+      background-color: white !important;
+      transition: all 0.3s ease !important;
+      min-width: 300px !important;
+    }
+
+    .search-input:focus {
+      outline: none !important;
+      border-color: #5bdab3 !important;
+      box-shadow: 0 0 0 3px rgba(91, 218, 179, 0.15) !important;
+    }
+
+    .search-input:hover {
+      border-color: #5bdab3 !important;
+    }
+
+    .btn {
+      background-color: #5bdab3 !important;
+      color: #1e1e2f !important;
+      padding: 12px 20px !important;
+      text-decoration: none !important;
+      border-radius: 8px !important;
+      font-weight: 500 !important;
+      font-size: 14px !important;
+      transition: all 0.3s ease !important;
+      border: none !important;
+      cursor: pointer !important;
+      box-shadow: 0 2px 6px rgba(91, 218, 179, 0.3) !important;
+      display: inline-block !important;
+    }
+
+    .btn:hover {
+      background-color: #1565c0 !important;
+      color: white !important;
+      transform: translateY(-2px) !important;
+      box-shadow: 0 4px 12px rgba(21, 101, 192, 0.3) !important;
+    }
+
+    table {
+      width: 100% !important;
+      border-collapse: collapse !important;
+      font-size: 14px !important;
+      background: white !important;
+      border-radius: 8px !important;
+      overflow: hidden !important;
+      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05) !important;
+      margin-bottom: 20px !important;
+    }
+
+    table th,
+    table td {
+      border: 1px solid #e6e6e6 !important;
+      padding: 12px 16px !important;
+      text-align: left !important;
+      font-size: 14px !important;
+      color: #333 !important;
+      font-weight: 400 !important;
+    }
+
+    table th {
+      background-color: #f8f9fa !important;
+      font-weight: 500 !important;
+      border-bottom: 2px solid #e6e6e6 !important;
+    }
+
+    .parent-row:hover td {
+      background-color: #f8f9fa !important;
+    }
+
+    .pagination-section {
+      text-align: center !important;
+      margin-top: 20px !important;
+      color: white !important;
+      font-size: 18px !important;
+      font-weight: 400 !important;
+      text-transform: uppercase !important;
+      letter-spacing: 2px !important;
+      font-family: 'Poppins', sans-serif !important;
+    }
+
+    .pagination-section span {
+      margin: 0 10px !important;
+      color: white !important;
+      font-size: 18px !important;
+      font-weight: 400 !important;
+      text-transform: uppercase !important;
+      letter-spacing: 2px !important;
+      font-family: 'Poppins', sans-serif !important;
+    }
+
+    .pagination-section .btn {
+      margin: 0 5px !important;
+    }
+
+    @media (max-width: 768px) {
+      .topbar {
+        margin-bottom: 20px !important;
+      }
+      
+      .logo-title {
+        font-size: 16px !important;
+        padding: 0 80px !important;
+        text-align: center !important;
+      }
+      
+      .container {
+        padding: 20px !important;
+        margin: 0 10px !important;
+      }
+
+      h2 {
+        font-size: 16px !important;
+      }
+
+      .search-section {
+        flex-direction: column !important;
+        align-items: stretch !important;
+      }
+      
+      .search-input {
+        width: 100% !important;
+        min-width: unset !important;
+      }
+
+      table {
+        font-size: 12px !important;
+      }
+      
+      table th,
+      table td {
+        padding: 8px !important;
+      }
+
+      .pagination-section {
+        font-size: 16px !important;
+      }
+
+      .pagination-section span {
+        font-size: 16px !important;
+      }
+    }
+
+    @media (max-width: 480px) {
+      .logo-title {
+        font-size: 14px !important;
+      }
+
+      table th,
+      table td {
+        padding: 6px !important;
+        font-size: 11px !important;
+      }
+    }
+  </style>
+</head>
+<body>
+  <!-- Video Background -->
+  <div class="video-background">
+    <video autoplay muted loop playsinline>
+      <source src="{% static 'media/vidbg.mp4' %}" type="video/mp4">
+      Your browser does not support the video tag.
+    </video>
+  </div>
+
+  <div class="topbar">
+    <button class="rtn-btn" onclick="location.href='/admin-dashboard'"> 
+      <div class="button-box">
+        <span class="button-elem">
+          <svg viewBox="0 0 46 40" xmlns="http://www.w3.org/2000/svg">
+            <path d="M46 20.038c0-.7-.3-1.5-.8-2.1l-16-17c-1.1-1-3.2-1.4-4.4-.3-1.2 1.1-1.2 3.3 0 4.4l11.3 11.9H3c-1.7 0-3 1.3-3 3s1.3 3 3 3h33.1l-11.3 11.9c-1 1-1.2 3.3 0 4.4 1.2 1.1 3.3.8 4.4-.3l16-17c.5-.5.8-1.1.8-1.9z"></path>
+          </svg>
+        </span>
+      </div>
+    </button>
+
+    <div class="logo-title">PPMS CLUSTER 4 IMUS CITY</div>
+    <div class="top-icons"></div>
+  </div>
+
+  <div class="container">
+    <h2>Registered Parents</h2>
+
+    <div class="search-section">
+      <input type="text" id="search-input" class="search-input" placeholder="Search by parent name...">
+      <button id="search-btn" class="btn">Search</button>
+    </div>
+
+    <table>
+      <thead>
+        <tr>
+          <th>Full Name</th>
+          <th>Contact</th>
+          <th>Email</th>
+          <th>Registered Date</th>
+          <th>Barangay</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for parent in parents %}
+        <tr class="parent-row">
+          <td>{{ parent.full_name }}</td>
+          <td>{{ parent.contact_number }}</td>
+          <td>{{ parent.email }}</td>
+          <td>{{ parent.created_at|date:"F j, Y" }}</td>
+          <td>{{ parent.barangay.name }}</td>
+        </tr>
+        {% empty %}
+        <tr><td colspan="5" style="text-align:center;">No parents registered.</td></tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+
+  <div class="pagination-section">
+    {% if parents.has_previous %}
+      <a href="?page={{ parents.previous_page_number }}" class="btn">Previous</a>
+    {% endif %}
+
+    {% if parents.paginator.num_pages > 1 %}
+      <span>Page {{ parents.number }} of {{ parents.paginator.num_pages }}</span>
+    {% endif %}
+
+    {% if parents.has_next %}
+      <a href="?page={{ parents.next_page_number }}" class="btn">Next</a>
+    {% endif %}
+  </div>
+
+  <script>
+    document.getElementById("search-btn").addEventListener("click", () => {
+      const input = document.getElementById("search-input").value.toLowerCase();
+      const rows = document.querySelectorAll(".parent-row");
+
+      rows.forEach(row => {
+        const name = row.cells[0].textContent.toLowerCase();
+        row.style.display = name.includes(input) ? "" : "none";
+      });
+    });
+  </script>
+
+</body>
+</html>

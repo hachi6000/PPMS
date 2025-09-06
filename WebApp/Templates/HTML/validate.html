@@ -1,0 +1,684 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  {% load static %}
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Validate Accounts</title>
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
+  
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+      font-family: 'Poppins', 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    }
+
+    body {
+      font-family: 'Poppins', 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif !important;
+      color: #333 !important;
+      padding: 20px !important;
+      min-height: 100vh !important;
+      margin: 0 !important;
+      overflow-x: hidden !important;
+      font-size: 14px !important;
+      font-weight: 400 !important;
+    }
+
+    .video-background {
+      position: fixed !important;
+      top: 0 !important;
+      left: 0 !important;
+      width: 100% !important;
+      height: 100% !important;
+      z-index: -1 !important;
+      overflow: hidden !important;
+    }
+
+    .video-background video {
+      width: 100vw !important;
+      height: 100vh !important;
+      object-fit: cover !important;
+      object-position: center !important;
+    }
+
+    .container {
+      max-width: 1200px !important;
+      margin: 0 auto !important;
+    }
+
+    .topbar {
+      position: relative !important;
+      height: 100px !important;
+      background-color: #1e1e2f !important;
+      border-radius: 10px !important;
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1) !important;
+      margin-bottom: 30px !important;
+    }
+
+    .logo-title {
+      position: absolute !important;
+      left: 50% !important;
+      top: 50% !important;
+      transform: translate(-50%, -50%) !important;
+      font-size: 20px !important;
+      font-weight: 600 !important;
+      color: white !important;
+      white-space: nowrap !important;
+    }
+
+    .rtn-btn {
+      position: absolute !important;
+      left: 20px !important;
+      top: 50% !important;
+      transform: translateY(-50%) !important;
+      width: 56px !important;
+      height: 56px !important;
+      background-color: transparent !important;
+      border: none !important;
+      cursor: pointer !important;
+    }
+
+    .rtn-btn:before,
+    .rtn-btn:after {
+      content: "" !important;
+      position: absolute !important;
+      border-radius: 50% !important;
+      inset: 7px !important;
+    }
+
+    .rtn-btn:before {
+      border: 4px solid #f0eeef !important;
+      transition: opacity 0.4s, transform 0.5s !important;
+    }
+
+    .rtn-btn:after {
+      border: 4px solid #96daf0 !important;
+      transform: scale(1.3) !important;
+      opacity: 0 !important;
+      transition: opacity 0.4s, transform 0.5s !important;
+    }
+
+    .rtn-btn:hover:before {
+      opacity: 0 !important;
+      transform: scale(0.7) !important;
+    }
+
+    .rtn-btn:hover:after {
+      opacity: 1 !important;
+      transform: scale(1) !important;
+    }
+
+    .button-box {
+      display: flex !important;
+      position: absolute !important;
+      top: 0 !important;
+      left: 0 !important;
+    }
+
+    .button-elem {
+      display: block !important;
+      width: 20px !important;
+      height: 20px !important;
+      margin: 17px 18px 0 18px !important;
+      transform: rotate(180deg) !important;
+      fill: #f0eeef !important;
+    }
+
+    .table-section {
+      background: white !important;
+      padding: 30px !important;
+      border-radius: 12px !important;
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08) !important;
+    }
+
+    .table-section h3 {
+      font-size: 18px !important;
+      margin-bottom: 25px !important;
+      font-weight: 400 !important;
+      color: #333 !important;
+      text-transform: uppercase !important;
+      letter-spacing: 2px !important;
+      font-family: 'Poppins', sans-serif !important;
+      text-align: center !important;
+    }
+
+    .role-filter {
+      display: flex !important;
+      justify-content: center !important;
+      gap: 15px !important;
+      margin-bottom: 25px !important;
+    }
+
+    .filter-btn {
+      padding: 10px 20px !important;
+      border: 2px solid #5bdab3 !important;
+      background: transparent !important;
+      color: #5bdab3 !important;
+      border-radius: 8px !important;
+      cursor: pointer !important;
+      font-weight: 500 !important;
+      transition: all 0.3s ease !important;
+      position: relative !important;
+    }
+
+    .filter-btn.active,
+    .filter-btn:hover {
+      background: #5bdab3 !important;
+      color: white !important;
+    }
+
+    .badge-count {
+      position: absolute !important;
+      top: -8px !important;
+      right: -8px !important;
+      background: #f44336 !important;
+      color: white !important;
+      border-radius: 50% !important;
+      padding: 2px 6px !important;
+      font-size: 10px !important;
+      min-width: 18px !important;
+      height: 18px !important;
+      display: flex !important;
+      align-items: center !important;
+      justify-content: center !important;
+    }
+
+    .badge-count.validated {
+      background: #4caf50 !important;
+    }
+
+    .badge-count.rejected {
+      background: #ff9800 !important;
+    }
+
+    table {
+      width: 100% !important;
+      border-collapse: collapse !important;
+      font-size: 14px !important;
+      background: white !important;
+      border-radius: 8px !important;
+      overflow: hidden !important;
+      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05) !important;
+      margin-bottom: 20px !important;
+    }
+
+    table th,
+    table td {
+      border: 1px solid #e6e6e6 !important;
+      padding: 12px 16px !important;
+      text-align: left !important;
+      font-size: 14px !important;
+      color: #333 !important;
+      font-weight: 400 !important;
+    }
+
+    table th {
+      background-color: #f8f9fa !important;
+      font-weight: 500 !important;
+      border-bottom: 2px solid #e6e6e6 !important;
+      text-align: center !important;
+    }
+
+    table td {
+      text-align: center !important;
+    }
+
+    table tr:hover td {
+      background-color: #f8f9fa !important;
+    }
+
+    .role-badge {
+      display: inline-block !important;
+      padding: 4px 12px !important;
+      border-radius: 20px !important;
+      font-size: 12px !important;
+      font-weight: 500 !important;
+      text-transform: uppercase !important;
+    }
+
+    .role-bhw {
+      background-color: #e3f2fd !important;
+      color: #1976d2 !important;
+    }
+
+    .role-bns {
+      background-color: #f3e5f5 !important;
+      color: #7b1fa2 !important;
+    }
+
+    .role-midwife {
+      background-color: #e8f5e8 !important;
+      color: #2e7d2e !important;
+    }
+
+    .role-nurse {
+      background-color: #e0f7fa !important; /* light cyan */
+      color: #00796b !important; /* teal */
+    }
+
+    .action-buttons {
+      display: flex !important;
+      gap: 0.5rem !important;
+      flex-wrap: wrap !important;
+      justify-content: center !important;
+    }
+
+    .action-buttons .btn {
+      min-width: 90px !important;
+      padding: 8px 16px !important;
+    }
+
+    .btn {
+      background-color: #5bdab3 !important;
+      color: #1e1e2f !important;
+      padding: 8px 16px !important;
+      text-decoration: none !important;
+      border-radius: 8px !important;
+      font-weight: 500 !important;
+      font-size: 12px !important;
+      transition: all 0.3s ease !important;
+      border: none !important;
+      cursor: pointer !important;
+      box-shadow: 0 2px 6px rgba(91, 218, 179, 0.3) !important;
+      display: inline-block !important;
+    }
+
+    .btn:hover {
+      background-color: #1565c0 !important;
+      color: white !important;
+      transform: translateY(-2px) !important;
+      box-shadow: 0 4px 12px rgba(21, 101, 192, 0.3) !important;
+    }
+
+    .validate-btn {
+      background-color: #4caf50 !important;
+      color: white !important;
+      box-shadow: 0 2px 6px rgba(76, 175, 80, 0.3) !important;
+    }
+
+    .validate-btn:hover {
+      background-color: #45a049 !important;
+      color: white !important;
+      box-shadow: 0 4px 12px rgba(69, 160, 73, 0.3) !important;
+    }
+
+    .reject-btn {
+      background-color: #f44336 !important;
+      color: white !important;
+      box-shadow: 0 2px 6px rgba(244, 67, 54, 0.3) !important;
+    }
+
+    .reject-btn:hover {
+      background-color: #e53935 !important;
+      color: white !important;
+      box-shadow: 0 4px 12px rgba(229, 57, 53, 0.3) !important;
+    }
+
+    .status-badge {
+      padding: 4px 12px !important;
+      border-radius: 20px !important;
+      font-size: 12px !important;
+      font-weight: 500 !important;
+      text-transform: uppercase !important;
+    }
+
+    .status-validated {
+      background-color: #e8f5e8 !important;
+      color: #2e7d2e !important;
+    }
+
+    .status-rejected {
+      background-color: #ffebee !important;
+      color: #c62828 !important;
+    }
+
+    .pagination {
+      display: flex !important;
+      justify-content: center !important;
+      align-items: center !important;
+      gap: 1rem !important;
+      margin-top: 1.5rem !important;
+      font-weight: 400 !important;
+      font-size: 18px !important;
+      color: white !important;
+      text-transform: uppercase !important;
+      letter-spacing: 2px !important;
+      font-family: 'Poppins', sans-serif !important;
+    }
+
+    .pagination span {
+      color: white !important;
+      font-size: 18px !important;
+      font-weight: 400 !important;
+      text-transform: uppercase !important;
+      letter-spacing: 2px !important;
+      font-family: 'Poppins', sans-serif !important;
+    }
+
+    .pagination a {
+      background-color: #5bdab3 !important;
+      color: #1e1e2f !important;
+      padding: 8px 16px !important;
+      text-decoration: none !important;
+      border-radius: 8px !important;
+      font-weight: 500 !important;
+      font-size: 14px !important;
+      transition: all 0.3s ease !important;
+      border: none !important;
+      box-shadow: 0 2px 6px rgba(91, 218, 179, 0.3) !important;
+      display: inline-block !important;
+    }
+
+    .pagination a:hover {
+      background-color: #1565c0 !important;
+      color: white !important;
+      transform: translateY(-2px) !important;
+      box-shadow: 0 4px 12px rgba(21, 101, 192, 0.3) !important;
+    }
+
+    @media (max-width: 768px) {
+      .topbar {
+        margin-bottom: 20px !important;
+      }
+      
+      .logo-title {
+        font-size: 16px !important;
+        padding: 0 80px !important;
+        text-align: center !important;
+      }
+      
+      .table-section {
+        padding: 20px !important;
+        margin: 0 10px !important;
+      }
+
+      .table-section h3 {
+        font-size: 16px !important;
+      }
+
+      table {
+        font-size: 12px !important;
+      }
+      
+      table th,
+      table td {
+        padding: 8px !important;
+      }
+
+      .action-buttons {
+        flex-direction: column !important;
+        gap: 0.3rem !important;
+      }
+
+      .action-buttons .btn {
+        min-width: 70px !important;
+        padding: 6px 12px !important;
+        font-size: 11px !important;
+      }
+
+      .role-filter {
+        flex-wrap: wrap !important;
+      }
+
+      .filter-btn {
+        padding: 8px 16px !important;
+        font-size: 12px !important;
+      }
+    }
+  </style>
+</head>
+<body>
+  <!-- Video Background -->
+  <div class="video-background">
+    <video autoplay muted loop playsinline>
+      <source src="{% static 'media/vidbg.mp4' %}" type="video/mp4">
+      Your browser does not support the video tag.
+    </video>
+  </div>
+
+  <div class="container">
+    <!-- Top Bar -->
+    <div class="topbar">
+      <button class="rtn-btn" onclick="location.href='/admin-dashboard'"> 
+        <div class="button-box">
+          <span class="button-elem">
+            <svg viewBox="0 0 46 40" xmlns="http://www.w3.org/2000/svg">
+              <path d="M46 20.038c0-.7-.3-1.5-.8-2.1l-16-17c-1.1-1-3.2-1.4-4.4-.3-1.2 1.1-1.2 3.3 0 4.4l11.3 11.9H3c-1.7 0-3 1.3-3 3s1.3 3 3 3h33.1l-11.3 11.9c-1 1-1.2 3.3 0 4.4 1.2 1.1 3.3.8 4.4-.3l16-17c.5-.5.8-1.1.8-1.9z"></path>
+            </svg>
+          </span>
+        </div>
+      </button>
+      <div class="logo-title">PPMS CLUSTER 4 IMUS CITY</div>
+    </div>
+
+    <!-- Table Section -->
+    <div class="table-section">
+      <h3>BHW, BNS & Midwife Account Validation</h3>
+
+      <!-- Status Filter Buttons -->
+      <div class="role-filter">
+        <button class="filter-btn {% if current_status == 'pending' or not current_status %}active{% endif %}" onclick="filterByStatus('pending')">
+          Pending Validation
+          {% if total_pending %}
+            <span class="badge-count">{{ total_pending }}</span>
+          {% endif %}
+        </button>
+        <button class="filter-btn {% if current_status == 'validated' %}active{% endif %}" onclick="filterByStatus('validated')">
+          Validated
+          {% if total_validated %}
+            <span class="badge-count validated">{{ total_validated }}</span>
+          {% endif %}
+        </button>
+        <button class="filter-btn {% if current_status == 'rejected' %}active{% endif %}" onclick="filterByStatus('rejected')">
+          Rejected
+          {% if total_rejected %}
+            <span class="badge-count rejected">{{ total_rejected }}</span>
+          {% endif %}
+        </button>
+        <button class="filter-btn {% if current_status == 'all' %}active{% endif %}" onclick="filterByStatus('all')">All Records</button>
+      </div>
+
+      <!-- Role Filter Buttons -->
+      <div class="role-filter" style="margin-top: 15px;">
+        <button class="filter-btn {% if current_filter == 'all' or not current_filter %}active{% endif %}" onclick="filterByRole('all')">
+          All Roles
+        </button>
+        <button class="filter-btn {% if current_filter == 'healthworker' %}active{% endif %}" onclick="filterByRole('healthworker')">
+          Health Workers Only
+          {% if bhw_pending %}
+            <span class="badge-count">{{ bhw_pending }}</span>
+          {% endif %}
+        </button>
+        <button class="filter-btn {% if current_filter == 'bns' %}active{% endif %}" onclick="filterByRole('bns')">
+          BNS Only
+          {% if bns_pending %}
+            <span class="badge-count">{{ bns_pending }}</span>
+          {% endif %}
+        </button>
+        <button class="filter-btn {% if current_filter == 'midwife' %}active{% endif %}" onclick="filterByRole('midwife')">
+          Midwives Only
+          {% if midwife_pending %}
+            <span class="badge-count">{{ midwife_pending }}</span>
+          {% endif %}
+        </button>
+        <!-- Add Nurse button here -->
+        <button class="filter-btn {% if current_filter == 'nurse' %}active{% endif %}" onclick="filterByRole('nurse')">
+          Nurses Only
+          {% if nurse_pending %}
+            <span class="badge-count">{{ nurse_pending }}</span>
+          {% endif %}
+        </button>
+      </div>
+
+
+      <table>
+        <thead>
+          <tr>
+            <th>Full Name</th>
+            <th>Email</th>
+            <th>Barangay</th>
+            <th>Role</th>
+            <th>Registration Date</th>
+            <th>Action / Status</th>
+          </tr>
+        </thead>
+        <tbody id="accountsTable">
+          {% for account in accounts %}
+            <tr class="account-row" data-role="{{ account.user_role|lower }}">
+              <td>{{ account.full_name }}</td>
+              <td>{{ account.email }}</td>
+              <td>{{ account.barangay.name|default:"Not Assigned" }}</td>
+              <td>
+               <span class="role-badge 
+                {% if account.user_role|lower == 'healthworker' or account.user_role|lower == 'bhw' %}role-bhw
+                {% elif account.user_role|lower == 'bns' or account.user_role|lower == 'barangay nutritional scholar' %}role-bns
+                {% elif account.user_role|lower == 'midwife' %}role-midwife
+                {% elif account.user_role|lower == 'nurse' %}role-nurse
+                {% endif %}">
+                {% if account.user_role|lower == 'healthworker' or account.user_role|lower == 'bhw' %}
+                  BHW
+                {% elif account.user_role|lower == 'bns' or account.user_role|lower == 'barangay nutritional scholar' %}
+                  BNS
+                {% elif account.user_role|lower == 'midwife' %}
+                  MIDWIFE
+                {% elif account.user_role|lower == 'nurse' %}
+                  NURSE
+                {% else %}
+                  {{ account.user_role|upper }}
+                {% endif %}
+              </span>
+              </td>
+              <td>{{ account.created_at|date:"M d, Y" }}</td>
+              <td>
+                {% if account.is_validated %}
+                  <span class="status-badge status-validated">VALIDATED</span>
+                {% elif account.is_rejected %}
+                  <span class="status-badge status-rejected">REJECTED</span>
+                {% else %}
+                  <div class="action-buttons">
+                    <form method="post" action="{% url 'validate_account' account.account_id %}" class="action-form validate-form">
+                      {% csrf_token %}
+                      <button type="submit" class="btn validate-btn">Validate</button>
+                    </form>
+                    <form method="post" action="{% url 'reject_account' account.account_id %}" class="action-form reject-form">
+                      {% csrf_token %}
+                      <button type="submit" class="btn reject-btn">Reject</button>
+                    </form>
+                  </div>
+                {% endif %}
+              </td>
+            </tr>
+          {% empty %}
+            <tr>
+              <td colspan="6" style="text-align: center; padding: 40px; color: #666;">
+                <div style="font-size: 18px; margin-bottom: 10px;"></div>
+                <div>No BHW, BNS, or Midwife accounts found.</div>
+                <div style="font-size: 12px; margin-top: 5px; opacity: 0.7;">Only Health Worker, BNS, and Midwife registration requests are shown here.</div>
+              </td>
+            </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <!-- Pagination -->
+  {% if page_obj %}
+  <div class="pagination">
+    <span>Page {{ page_obj.number }} of {{ page_obj.paginator.num_pages }}</span>
+
+    {% if page_obj.has_previous %}
+      <a href="?page=1{% if current_filter and current_filter != 'all' %}&role={{ current_filter }}{% endif %}{% if current_status and current_status != 'pending' %}&status={{ current_status }}{% endif %}">&laquo; First</a>
+      <a href="?page={{ page_obj.previous_page_number }}{% if current_filter and current_filter != 'all' %}&role={{ current_filter }}{% endif %}{% if current_status and current_status != 'pending' %}&status={{ current_status }}{% endif %}">Previous</a>
+    {% endif %}
+
+    {% if page_obj.has_next %}
+      <a href="?page={{ page_obj.next_page_number }}{% if current_filter and current_filter != 'all' %}&role={{ current_filter }}{% endif %}{% if current_status and current_status != 'pending' %}&status={{ current_status }}{% endif %}">Next</a>
+      <a href="?page={{ page_obj.paginator.num_pages }}{% if current_filter and current_filter != 'all' %}&role={{ current_filter }}{% endif %}{% if current_status and current_status != 'pending' %}&status={{ current_status }}{% endif %}">Last &raquo;</a>
+    {% endif %}
+  </div>
+  {% endif %}
+
+  <!-- SweetAlert2 -->
+  <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+  {% if messages %}
+    <script>
+      document.addEventListener("DOMContentLoaded", () => {
+        {% for message in messages %}
+          Swal.fire({
+            toast: true,
+            position: 'top-end',
+            icon: 'success',
+            title: '{{ message|escapejs }}',
+            showConfirmButton: false,
+            timer: 3000,
+            timerProgressBar: true,
+          });
+        {% endfor %}
+      });
+    </script>
+  {% endif %}
+
+  <script>
+    // Status filtering functionality
+    function filterByStatus(status) {
+      const currentRole = new URLSearchParams(window.location.search).get('role') || 'all';
+      const newUrl = `?status=${status}&role=${currentRole}`;
+      window.location.href = newUrl;
+    }
+
+    // Role filtering functionality  
+    function filterByRole(role) {
+      const currentStatus = new URLSearchParams(window.location.search).get('status') || 'pending';
+      const newUrl = `?role=${role}&status=${currentStatus}`;
+      window.location.href = newUrl;
+    }
+
+    document.addEventListener("DOMContentLoaded", () => {
+      // Validation form handlers
+      document.querySelectorAll('.validate-form').forEach(form => {
+        form.addEventListener('submit', function(e) {
+          e.preventDefault();
+          Swal.fire({
+            title: 'Validate this account?',
+            text: "This will allow the user to access the system.",
+            icon: 'question',
+            showCancelButton: true,
+            confirmButtonColor: '#4caf50',
+            cancelButtonColor: '#f44336',
+            confirmButtonText: 'Yes, validate it!',
+            cancelButtonText: 'Cancel'
+          }).then((result) => {
+            if (result.isConfirmed) {
+              this.submit();
+            }
+          });
+        });
+      });
+
+      // Rejection form handlers
+      document.querySelectorAll('.reject-form').forEach(form => {
+        form.addEventListener('submit', function(e) {
+          e.preventDefault();
+          Swal.fire({
+            title: 'Reject this account?',
+            text: "The user will not be able to access the system.",
+            icon: 'warning',
+            showCancelButton: true,
+            confirmButtonColor: '#f44336',
+            cancelButtonColor: '#6c757d',
+            confirmButtonText: 'Yes, reject it!',
+            cancelButtonText: 'Cancel'
+          }).then((result) => {
+            if (result.isConfirmed) {
+              this.submit();
+            }
+          });
+        });
+      });
+    });
+  </script>
+</body>
+</html>

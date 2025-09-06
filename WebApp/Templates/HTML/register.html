@@ -1,0 +1,525 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  {% load static %}
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Register</title>
+  <link rel="stylesheet" href="{% static 'css/register.css' %}">
+  <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
+  <style>
+    body{
+      background-image: url("{% static 'media/loginbg.png' %}");
+      background-size: cover;
+      background-repeat: no-repeat;
+      background-position: center top;
+    }
+    .eye-icon {
+      position: absolute;
+      top: 70%;
+      right: 10px;
+      transform: translateY(-50%);
+      cursor: pointer;
+      width: 20px;
+      height: 20px;
+    }
+    .right-image {
+      max-width: 100%;
+      height: auto;
+      display: block;
+      margin-top: 9rem;
+      margin-bottom: 10px;
+      border-radius: 8px;
+    }
+    .role-selector {
+      display: flex;
+      gap: 10px;
+      margin-bottom: 20px;
+    }
+    .role-option {
+      flex: 1;
+      padding: 15px;
+      border: 2px solid #ddd;
+      border-radius: 8px;
+      cursor: pointer;
+      text-align: center;
+      background: #f8f9fa;
+      transition: all 0.3s ease;
+    }
+    .role-option:hover {
+      border-color: #007bff;
+      background: #e7f3ff;
+    }
+    .role-option.active {
+      border-color: #007bff;
+      background: #007bff;
+      color: white;
+    }
+    .role-option h4 {
+      margin: 0 0 5px 0;
+      font-size: 16px;
+    }
+    .role-option p {
+      margin: 0;
+      font-size: 12px;
+      opacity: 0.8;
+    }
+  </style>
+</head>
+<body class="fade-in">
+
+<!-- ✅ SweetAlert2 Django messages -->
+{% if messages %}
+  {% for message in messages %}
+    <script>
+      Swal.fire({
+        icon: "{% if message.tags == 'success' %}success{% else %}error{% endif %}",
+        title: "{{ message|escapejs }}",
+        showConfirmButton: false,
+        timer: 3000
+      });
+    </script>
+  {% endfor %}
+{% endif %}
+
+<div class="topbar">
+  <div class="logo-title">PPMS CLUSTER 4 IMUS CITY</div>
+</div>
+
+<div class="main">
+  <div class="left">
+    <div class="form-box">
+      <h2>Register Account</h2>
+      
+      <!-- ✅ Updated Role Selection with Midwife -->
+     <div class="role-selector">
+      <div class="role-option active" data-role="healthworker">
+        <h4>BHW</h4>
+        <p>Barangay Health Worker</p>
+      </div>
+      <div class="role-option" data-role="bns">
+        <h4>BNS</h4>
+        <p>Barangay Nutritional Scholar</p>
+      </div>
+      <div class="role-option" data-role="midwife">
+        <h4>Midwife</h4>
+        <p>Healthcare Professional</p>
+      </div>
+      <!-- ✅ NEW Nurse Role -->
+      <div class="role-option" data-role="nurse">
+        <h4>Nurse</h4>
+        <p>Registered Healthcare Nurse</p>
+      </div>
+    </div>
+
+
+      <form id="registerForm" method="post" action="{% url 'register' %}">
+        {% csrf_token %}
+
+        <input type="hidden" id="role" name="role" value="BHW">
+
+        <div class="form-group">
+          <label for="firstName">First Name</label>
+          <input type="text" id="firstName" name="firstName" required>
+        </div>
+
+        <div class="form-group">
+          <label for="lastName">Last Name</label>
+          <input type="text" id="lastName" name="lastName" required>
+        </div>
+
+        <div class="form-group">
+          <label for="email">Email</label>
+          <input type="email" id="email" name="email" required>
+        </div>
+
+        <div class="form-group">
+          <label for="contact">Contact Number</label>
+          <input type="text" id="contact" name="contact" required maxlength="11" pattern="\d{11}" title="Contact number must be 11 digits">
+        </div>
+
+        <div class="form-group" style="position: relative;">
+          <label for="password">Password</label>
+          <input type="password" id="password" name="password" required>
+          <img id="togglePassword" class="eye-icon" src="{% static 'media/show-password.png' %}" alt="Show Password">
+        </div>
+
+        <div class="form-group" style="position: relative;">
+          <label for="confirm">Confirm Password</label>
+          <input type="password" id="confirm" name="confirm" required>
+          <img id="toggleConfirmPassword" class="eye-icon" src="{% static 'media/show-password.png' %}" alt="Show Password">
+        </div>
+
+        <div class="form-group">
+          <label for="birthdate">Birthdate</label>
+          <input type="date" id="birthdate" name="birthdate" required>
+          <input type="hidden" id="age" name="age">
+        </div>
+
+        <div class="form-group">
+          <label for="address">Address</label>
+          <input type="text" id="address" name="address" required>
+        </div>
+
+        <div class="form-group" id="barangayGroup">
+          <label for="barangay_id">Barangay</label>
+          <select id="barangay_id" name="barangay_id" required>
+            <option value="" disabled selected>Select your barangay</option>
+            {% for barangay in barangays %}
+              <option value="{{ barangay.id }}">{{ barangay.name }}</option>
+            {% endfor %}
+          </select>
+        </div>
+
+        <div class="form-group">
+          <input type="checkbox" id="agree" name="agree" required>
+          <label for="agree">
+            I agree to the 
+            <a href="javascript:void(0);" id="openTerms" class="policy-link">Terms and Conditions</a> and 
+            <a href="javascript:void(0);" id="openPrivacy" class="policy-link">Privacy Policy</a>.
+          </label>
+        </div>
+
+        <button type="submit" class="btn">Register</button>
+      </form>
+
+      <div class="text-link">
+        Already have an account? <a href="{% url 'login' %}">Log in</a>
+      </div>
+    </div>
+  </div>
+
+  <div class="right">
+    <img src="{% static 'media/secondR.jpeg' %}" alt="Description" class="right-image">
+    <p class="quote">Empowering healthier communities, one step at a time. Our system is designed to simplify health monitoring, streamline services, and support families through every stage of care because your well-being matters.</p>
+  </div>
+</div>
+
+<!-- Terms Modal -->
+<div id="termsModal" class="modal">
+  <div class="modal-content">
+    <span class="close" id="closeTerms">&times;</span>
+    <h2>Terms and Conditions</h2>
+    <div class="modal-body modal-scroll">
+      <p><strong>Preschooler Profiling and Monitoring System</strong></p>
+      <p><strong>Last updated:</strong> July 29, 2025</p>
+
+      <h3>1. Introduction</h3>
+      <p>These Terms and Conditions constitute a legally binding agreement between you, whether personally or on behalf of an entity and the development team from Technological University of the Philippines - Cavite, concerning your access to and use of the Preschooler Profiling and Monitoring System.</p>
+      <p>By accessing or using our System, you agree that you have read, understood, and agree to be bound by these Terms. If you do not agree with these Terms, you are prohibited from using or accessing this System.</p>
+
+      <h3>2. Acceptance of Terms</h3>
+      <p>By creating an account, accessing, or using the Preschooler Profiling and Monitoring System, you acknowledge that you have read and understood these Terms and agree to be bound by them. These Terms apply to all users of the system, including health workers, administrators, parents, and educators.</p>
+
+      <h3>3. Description of Service</h3>
+      <p>The Preschooler Profiling and Monitoring System is a web-based application designed to help preschool institutions, daycare centers, barangay health workers, and authorized personnel track, monitor, and assess the developmental progress of preschool-aged children (ages 0-60 months). The System provides tools for:</p>
+      <ul>
+        <li>Preschooler profile management</li>
+        <li>Developmental milestone tracking and assessment</li>
+        <li>Health and nutritional status monitoring</li>
+        <li>Early childhood development progress tracking</li>
+        <li>Communication between educators, health workers, and parents/guardians</li>
+        <li>Report generation and analytics for developmental assessments</li>
+      </ul>
+
+      <h3>4. User Eligibility and Account Registration</h3>
+      <h4>4.1 Eligibility</h4>
+      <p>You must be at least 18 years of age to use this System. By using the System, you represent and warrant that you meet this age requirement.</p>
+
+      <h4>4.2 Account Registration</h4>
+      <p>To access certain features of the System, you must register for an account. You agree to:</p>
+      <ul>
+        <li>Provide accurate, current, and complete information during registration</li>
+        <li>Maintain and promptly update your account information</li>
+        <li>Maintain the security and confidentiality of your login credentials</li>
+        <li>Accept responsibility for all activities that occur under your account</li>
+      </ul>
+
+      <h4>4.3 Account Types</h4>
+      <ul>
+        <li>Health administrators</li>
+        <li>Barangay health workers and community health personnel</li>
+        <li>Parents and guardians (with appropriate authorization)</li>
+      </ul>
+
+      <h3>5. Acceptable Use Policy</h3>
+      <h4>5.1 Permitted Uses</h4>
+      <p>You may use the System only for lawful purposes and in accordance with these Terms. Specifically, you agree to use the System only for:</p>
+      <ul>
+        <li>Early childhood development and health assessment purposes</li>
+        <li>Authorized monitoring of preschooler developmental progress</li>
+        <li>Health and nutritional status tracking by qualified personnel</li>
+        <li>Communication with authorized parties regarding child development and health</li>
+        <li>Administrative tasks related to preschool institutions and community health programs</li>
+      </ul>
+
+      <h4>5.2 Prohibited Uses</h4>
+      <p>You agree NOT to use the System:</p>
+      <ul>
+        <li>For any unlawful purpose or to solicit others to perform unlawful acts</li>
+        <li>To violate any international, federal, provincial, or state regulations, rules, laws, or local ordinances</li>
+        <li>To infringe upon or violate our intellectual property rights or the intellectual property rights of others</li>
+        <li>To harass, abuse, insult, harm, defame, slander, disparage, intimidate, or discriminate</li>
+        <li>To submit false or misleading information about children or their development</li>
+        <li>To access or attempt to access accounts or data belonging to other users without authorization</li>
+        <li>To interfere with, disrupt, or create an undue burden on the System or networks connected to the System</li>
+      </ul>
+
+      <h3>6. Privacy and Data Protection</h3>
+      <h4>6.1 Child Privacy</h4>
+      <p>We take the privacy and protection of children's information extremely seriously. Our collection, use, and disclosure of personal information, including sensitive information about preschoolers, is governed by our Privacy Policy, which is incorporated into these Terms by reference.</p>
+
+      <h4>6.2 Data Privacy Act Compliance</h4>
+      <p>We comply with the Data Privacy Act of 2012 (Republic Act No. 10173) of the Philippines and its implementing rules and regulations.</p>
+
+      <h4>6.3 COPPA Compliance</h4>
+      <p>We comply with the Children's Online Privacy Protection Act (COPPA) and other applicable privacy laws regarding the collection of information from children under 13 years of age.</p>
+
+      <h4>6.4 Data Security</h4>
+      <p>We implement appropriate security measures to protect against unauthorized access, alteration, disclosure, or destruction of personal information and data stored in our System.</p>
+
+      <h3>7. Intellectual Property Rights</h3>
+      <h4>7.1 Our Intellectual Property</h4>
+      <p>The System and its original content remain the exclusive property of the Development Team from Technological University of the Philippines - Cavite and its licensors.</p>
+
+      <h4>7.2 User Content</h4>
+      <p>By submitting content, you grant us a non-exclusive, worldwide, royalty-free license to use such content solely for providing the Service.</p>
+
+      <h4>7.3 Restrictions</h4>
+      <ul>
+        <li>Reproduce, distribute, modify, create derivative works of, publicly display, publicly perform, republish, download, store, or transmit any material on our System</li>
+        <li>Reverse engineer, decompile, or disassemble the System</li>
+        <li>Remove or alter any copyright, trademark, or other proprietary rights notices</li>
+      </ul>
+
+      <h3>8. User Responsibilities</h3>
+      <h4>8.1 Data Accuracy</h4>
+      <p>Users are responsible for ensuring that all information entered into the System regarding preschoolers is accurate, current, and obtained through appropriate and ethical means.</p>
+
+      <h4>8.2 Authorization</h4>
+      <p>Users must ensure they have proper authorization to input, access, and share information about the children in their care or under their educational supervision.</p>
+
+      <h4>8.3 Professional Standards</h4>
+      <p>Educators, health workers, and administrators using the System must adhere to their professional standards and ethical guidelines.</p>
+
+      <h3>9. Termination</h3>
+      <p>We may suspend or terminate accounts for violations. Data retention after termination is handled per our Privacy Policy.</p>
+
+      <h3>10. Disclaimers</h3>
+      <p>The System is provided “AS IS” and intended as an educational monitoring tool, not a substitute for professional medical or educational assessments.</p>
+
+      <h3>11. Limitation of Liability</h3>
+      <p>The development team shall not be liable for indirect, incidental, or consequential damages arising from use of the System.</p>
+
+      <h3>12. Indemnification</h3>
+      <p>You agree to indemnify and hold harmless the development team and its affiliates against claims, damages, or expenses arising from your use of the System.</p>
+
+      <h3>13. Governing Law</h3>
+      <p>These Terms are governed by the laws of the Republic of the Philippines.</p>
+
+      <h3>14. Changes to Terms</h3>
+      <p>We reserve the right to modify these Terms at any time. Material changes will be communicated in advance.</p>
+
+      <h3>15. Severability</h3>
+      <p>If any provision is deemed invalid, the remaining provisions remain enforceable.</p>
+
+      <h3>16. Contact Information</h3>
+      <p><strong>Thesis Development Team</strong><br>
+      Technological University of the Philippines - Cavite<br>
+      Email: ppms.cluster4imus@gmail.com<br>
+      Address: Technological University of the Philippines - Cavite Campus, Cavite, Philippines</p>
+
+      <p><em>By using the Preschooler Profiling and Monitoring System, you acknowledge that you have read and understood these Terms and Conditions and agree to be bound by them.</em></p>
+    </div>
+  </div>
+</div>
+
+<!-- Privacy Policy Modal -->
+<div id="privacyModal" class="modal">
+  <div class="modal-content">
+    <span class="close" id="closePrivacy">&times;</span>
+    <h2>Privacy Policy</h2>
+    <div class="modal-body modal-scroll">
+      <p><strong>Effective Date:</strong> July 29, 2025</p>
+      <p>This Privacy Policy explains how the Preschooler Profiling and Monitoring System (PPMS) collects, uses, and protects your personal data in compliance with the Data Privacy Act of 2012 (Republic Act No. 10173), COPPA, and other applicable laws.</p>
+
+      <h3>1. Scope</h3>
+      <p>This Policy applies to all users of the PPMS, including health workers, administrators, parents, and guardians.</p>
+
+      <h3>2. Data We Collect</h3>
+      <ul>
+        <li><strong>Personal Information:</strong> Name, birthdate, address, contact details, parent/guardian information.</li>
+        <li><strong>Sensitive Personal Information:</strong> Preschooler health records, developmental assessments, nutritional status, and other related health data.</li>
+      </ul>
+
+      <h3>3. Purpose of Data Processing</h3>
+      <p>We collect and process data solely for the following purposes:</p>
+      <ul>
+        <li>Preschooler health monitoring and BMI assessment</li>
+        <li>Developmental milestone and progress tracking</li>
+        <li>Communication between health workers, educators, and parents</li>
+        <li>Compliance with public health programs and reporting requirements</li>
+      </ul>
+
+      <h3>4. Legal Basis for Processing</h3>
+      <p>Data processing is carried out based on:</p>
+      <ul>
+        <li>Your consent</li>
+        <li>Legitimate interests of early childhood health monitoring</li>
+        <li>Compliance with applicable laws and regulations</li>
+      </ul>
+
+      <h3>5. Data Sharing and Disclosure</h3>
+      <p>Data will only be shared with:</p>
+      <ul>
+        <li>Authorized barangay health workers, administrators, and system personnel</li>
+        <li>Government agencies (e.g., Department of Health) when legally required</li>
+        <li>Researchers and academic partners, only with anonymized data</li>
+      </ul>
+
+      <h3>6. Data Retention</h3>
+      <p>Data is retained only as long as necessary for its intended purpose or as required by law. Upon account termination, retention and deletion follow our Terms and Privacy Policy.</p>
+
+      <h3>7. Children’s Privacy</h3>
+      <p>We strictly comply with COPPA and RA 10173 in handling preschooler data. No data is collected directly from children without parental or guardian authorization.</p>
+
+      <h3>8. Your Rights</h3>
+      <p>Under RA 10173, you have the right to:</p>
+      <ul>
+        <li>Access, update, or correct your data</li>
+        <li>Request deletion or blocking of personal data</li>
+        <li>Withdraw consent to data processing</li>
+        <li>File a complaint with the National Privacy Commission (NPC)</li>
+      </ul>
+
+      <h3>9. Security Measures</h3>
+      <p>We implement organizational, physical, and technical measures to protect personal data against unauthorized access, alteration, disclosure, or destruction.</p>
+
+      <h3>10. Updates to this Policy</h3>
+      <p>This Privacy Policy may be updated from time to time. Users will be notified of significant changes.</p>
+
+      <h3>11. Contact Information</h3>
+      <p><strong>Thesis Development Team</strong><br>
+      Technological University of the Philippines - Cavite<br>
+      Email: ppms.cluster4imus@gmail.com<br>
+      Address: Technological University of the Philippines - Cavite Campus, Cavite, Philippines</p>
+    </div>
+  </div>
+</div>
+            
+
+
+<!-- JavaScript -->
+<script>
+document.addEventListener('DOMContentLoaded', function () {
+  const roleOptions = document.querySelectorAll(".role-option");
+  const roleInput = document.getElementById("role");
+
+  // ✅ Updated role selection logic to include Midwife
+roleOptions.forEach(option => {
+  option.addEventListener("click", () => {
+    roleOptions.forEach(opt => opt.classList.remove("active"));
+    option.classList.add("active");
+
+    const selected = option.getAttribute("data-role");
+    if (selected === "healthworker") {
+      roleInput.value = "BHW";  
+    } else if (selected === "bns") {
+      roleInput.value = "Barangay Nutritional Scholar";  
+    } else if (selected === "midwife") {
+      roleInput.value = "Midwife";  
+    } else if (selected === "nurse") {   // ✅ NEW
+      roleInput.value = "Nurse";  
+    }
+  });
+});
+
+
+  const firstName = document.getElementById('firstName');
+  const lastName = document.getElementById('lastName');
+  const address = document.getElementById('address');
+  const email = document.getElementById('email');
+  const contact = document.getElementById('contact');
+  const password = document.getElementById('password');
+  const confirm = document.getElementById('confirm');
+  const form = document.getElementById('registerForm');
+  const barangaySelect = document.getElementById('barangay_id');
+  const birthdate = document.getElementById('birthdate');
+  const ageInput = document.getElementById('age');
+  const agree = document.getElementById('agree');
+  const togglePassword = document.getElementById("togglePassword");
+  const toggleConfirmPassword = document.getElementById("toggleConfirmPassword");
+
+  togglePassword.addEventListener("click", () => {
+    const isVisible = password.type === "text";
+    password.type = isVisible ? "password" : "text";
+    togglePassword.src = isVisible
+      ? "{% static 'media/show-password.png' %}"
+      : "{% static 'media/hide-password.png' %}";
+    togglePassword.alt = isVisible ? "Show Password" : "Hide Password";
+  });
+
+  toggleConfirmPassword.addEventListener("click", () => {
+    const isVisible = confirm.type === "text";
+    confirm.type = isVisible ? "password" : "text";
+    toggleConfirmPassword.src = isVisible
+      ? "{% static 'media/show-password.png' %}"
+      : "{% static 'media/hide-password.png' %}";
+    toggleConfirmPassword.alt = isVisible ? "Show Password" : "Hide Password";
+  });
+
+  [firstName, lastName].forEach(input => input.addEventListener('input', e => {
+    e.target.value = e.target.value.replace(/[^a-zA-Z\s]/g, '').replace(/^\s+|\s{2,}/g, ' ');
+  }));
+
+  address.addEventListener('input', e => {
+    e.target.value = e.target.value.replace(/[^a-zA-Z0-9\s.,#/-]/g, '').replace(/^\s+|\s{2,}/g, ' ');
+  });
+
+  email.addEventListener('input', e => e.target.value = e.target.value.replace(/\s/g, ''));
+  contact.addEventListener('input', e => e.target.value = e.target.value.replace(/\D/g, '').slice(0, 11));
+  [password, confirm].forEach(input => input.addEventListener('input', e => e.target.value = e.target.value.replace(/[^a-zA-Z0-9]/g, '')));
+
+  birthdate.max = new Date().toISOString().split("T")[0];
+  birthdate.addEventListener("change", () => {
+    const birth = new Date(birthdate.value);
+    const today = new Date();
+    let age = today.getFullYear() - birth.getFullYear();
+    if (today.getMonth() < birth.getMonth() || (today.getMonth() === birth.getMonth() && today.getDate() < birth.getDate())) age--;
+    ageInput.value = age;
+  });
+
+  form.addEventListener('submit', function (e) {
+    if (!agree.checked) {
+      e.preventDefault();
+      Swal.fire({ icon: 'warning', title: 'Agreement Required', text: 'You must agree to the Terms and Conditions and Privacy Policy.' });
+      return;
+    }
+    if (password.value !== confirm.value) {
+      e.preventDefault();
+      Swal.fire({ icon: 'error', title: 'Passwords do not match' });
+      return;
+    }
+    if (!barangaySelect.value) {
+      e.preventDefault();
+      Swal.fire({ icon: 'warning', title: 'Barangay Required', text: 'Please select your barangay.' });
+      return;
+    }
+  });
+
+  const termsModal = document.getElementById("termsModal");
+  const privacyModal = document.getElementById("privacyModal");
+  document.getElementById("openTerms").onclick = () => termsModal.style.display = "block";
+  document.getElementById("openPrivacy").onclick = () => privacyModal.style.display = "block";
+  document.getElementById("closeTerms").onclick = () => termsModal.style.display = "none";
+  document.getElementById("closePrivacy").onclick = () => privacyModal.style.display = "none";
+  window.onclick = function (event) {
+    if (event.target === termsModal) termsModal.style.display = "none";
+    if (event.target === privacyModal) privacyModal.style.display = "none";
+  };
+});
+</script>
+
+</body>
+</html>

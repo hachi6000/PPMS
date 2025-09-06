@@ -1,0 +1,784 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  {% load static %}
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Manage Announcements</title>
+
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+  
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+      font-family: 'Poppins', 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    }
+
+    body {
+      font-family: 'Poppins', 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif !important;
+      color: #333 !important;
+      padding: 20px !important;
+      min-height: 100vh !important;
+      margin: 0 !important;
+      overflow-x: hidden !important;
+      font-size: 14px !important;
+      font-weight: 400 !important;
+    }
+
+    .video-background {
+      position: fixed !important;
+      top: 0 !important;
+      left: 0 !important;
+      width: 100% !important;
+      height: 100% !important;
+      z-index: -1 !important;
+      overflow: hidden !important;
+    }
+
+    .video-background video {
+      width: 100vw !important;
+      height: 100vh !important;
+      object-fit: cover !important;
+      object-position: center !important;
+    }
+
+    .topbar {
+      position: relative !important;
+      height: 100px !important;
+      background-color: #1e1e2f !important;
+      border-radius: 10px !important;
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1) !important;
+      margin: 0 auto 30px auto !important;
+      max-width: 1200px !important;
+    }
+
+    .logo-title {
+      position: absolute !important;
+      left: 50% !important;
+      top: 50% !important;
+      transform: translate(-50%, -50%) !important;
+      font-size: 20px !important;
+      font-weight: 600 !important;
+      color: white !important;
+      white-space: nowrap !important;
+    }
+
+    .rtn-btn {
+      position: absolute !important;
+      left: 20px !important;
+      top: 50% !important;
+      transform: translateY(-50%) !important;
+      width: 56px !important;
+      height: 56px !important;
+      background-color: transparent !important;
+      border: none !important;
+      cursor: pointer !important;
+    }
+
+    .rtn-btn:before,
+    .rtn-btn:after {
+      content: "" !important;
+      position: absolute !important;
+      border-radius: 50% !important;
+      inset: 7px !important;
+    }
+
+    .rtn-btn:before {
+      border: 4px solid #f0eeef !important;
+      transition: opacity 0.4s, transform 0.5s !important;
+    }
+
+    .rtn-btn:after {
+      border: 4px solid #96daf0 !important;
+      transform: scale(1.3) !important;
+      opacity: 0 !important;
+      transition: opacity 0.4s, transform 0.5s !important;
+    }
+
+    .rtn-btn:hover:before {
+      opacity: 0 !important;
+      transform: scale(0.7) !important;
+    }
+
+    .rtn-btn:hover:after {
+      opacity: 1 !important;
+      transform: scale(1) !important;
+    }
+
+    .button-box {
+      display: flex !important;
+      position: absolute !important;
+      top: 0 !important;
+      left: 0 !important;
+    }
+
+    .button-elem {
+      display: block !important;
+      width: 20px !important;
+      height: 20px !important;
+      margin: 17px 18px 0 18px !important;
+      transform: rotate(180deg) !important;
+      fill: #f0eeef !important;
+    }
+
+    .top-icons {
+      position: absolute !important;
+      right: 20px !important;
+      top: 50% !important;
+      transform: translateY(-50%) !important;
+    }
+
+    .container {
+      max-width: 1200px;
+      margin: 0 auto;
+    }
+
+    .greeting {
+      font-size: 18px !important;
+      font-weight: 400 !important;
+      color: white !important;
+      text-align: center !important;
+      margin-bottom: 30px !important;
+      text-transform: uppercase !important;
+      letter-spacing: 2px !important;
+      font-family: 'Poppins', sans-serif !important;
+    }
+
+    .main-section {
+      background: white;
+      padding: 30px;
+      border-radius: 12px;
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+      margin-bottom: 30px;
+    }
+
+    .section-title {
+      font-size: 18px !important;
+      margin-bottom: 25px !important;
+      font-weight: 400 !important;
+      color: #333 !important;
+      text-transform: uppercase !important;
+      letter-spacing: 2px !important;
+      font-family: 'Poppins', sans-serif !important;
+      text-align: center !important;
+    }
+
+    .add-btn {
+      background-color: #5bdab3 !important;
+      color: #1e1e2f !important;
+      padding: 12px 24px !important;
+      text-decoration: none !important;
+      border-radius: 8px !important;
+      font-weight: 500 !important;
+      font-size: 14px !important;
+      transition: all 0.3s ease !important;
+      border: none !important;
+      cursor: pointer !important;
+      margin-bottom: 20px !important;
+      display: inline-block !important;
+      box-shadow: 0 2px 6px rgba(91, 218, 179, 0.3) !important;
+    }
+
+    .add-btn:hover {
+      background-color: #1565c0 !important;
+      color: white !important;
+      transform: translateY(-2px) !important;
+      box-shadow: 0 4px 12px rgba(21, 101, 192, 0.3) !important;
+    }
+
+    .announcements-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
+      gap: 20px;
+      margin-top: 20px;
+    }
+
+    .announcement-card {
+      background: #f8f9fa;
+      border: 1px solid #e0e4e7;
+      border-radius: 12px;
+      padding: 20px;
+      transition: all 0.3s ease;
+      position: relative;
+      min-height: 300px;
+    }
+
+    .announcement-card:hover {
+      transform: translateY(-3px);
+      box-shadow: 0 8px 20px rgba(0, 0, 0, 0.1);
+    }
+
+    .announcement-image {
+      margin-bottom: 15px;
+      border-radius: 8px;
+      overflow: hidden;
+    }
+
+    .announcement-image img {
+      transition: transform 0.3s ease;
+    }
+
+    .announcement-image img:hover {
+      transform: scale(1.05);
+    }
+
+    .announcement-title {
+      font-size: 16px;
+      font-weight: 600;
+      color: #1e1e2f;
+      margin-bottom: 10px;
+    }
+
+    .announcement-content {
+      font-size: 14px;
+      color: #666;
+      margin-bottom: 15px;
+      line-height: 1.5;
+      max-height: 60px;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    .announcement-meta {
+      font-size: 12px;
+      color: #999;
+      margin-bottom: 15px;
+    }
+
+    .announcement-status {
+      display: inline-block;
+      padding: 4px 8px;
+      border-radius: 12px;
+      font-size: 10px;
+      font-weight: 600;
+      text-transform: uppercase;
+      margin-bottom: 15px;
+    }
+
+    .status-active {
+      background-color: #e8f5e8;
+      color: #2e7d32;
+    }
+
+    .status-inactive {
+      background-color: #ffebee;
+      color: #c62828;
+    }
+
+    .card-actions {
+      display: flex;
+      gap: 10px;
+      justify-content: flex-end;
+    }
+
+    .btn-edit {
+      background-color: #1565c0;
+      color: white;
+      padding: 6px 12px;
+      border: none;
+      border-radius: 6px;
+      font-size: 12px;
+      cursor: pointer;
+      transition: all 0.3s ease;
+    }
+
+    .btn-edit:hover {
+      background-color: #0d47a1;
+      transform: translateY(-1px);
+    }
+
+    .btn-delete {
+      background-color: #d32f2f;
+      color: white;
+      padding: 6px 12px;
+      border: none;
+      border-radius: 6px;
+      font-size: 12px;
+      cursor: pointer;
+      transition: all 0.3s ease;
+    }
+
+    .btn-delete:hover {
+      background-color: #b71c1c;
+      transform: translateY(-1px);
+    }
+
+    /* Modal Styles */
+    .modal {
+      display: none;
+      position: fixed;
+      z-index: 1000;
+      left: 0;
+      top: 0;
+      width: 100%;
+      height: 100%;
+      background-color: rgba(0, 0, 0, 0.5);
+      animation: fadeIn 0.3s ease;
+    }
+
+    .modal-content {
+      background-color: white;
+      margin: 5% auto;
+      padding: 30px;
+      border-radius: 12px;
+      width: 90%;
+      max-width: 600px;
+      position: relative;
+      animation: slideIn 0.3s ease;
+    }
+
+    @keyframes fadeIn {
+      from { opacity: 0; }
+      to { opacity: 1; }
+    }
+
+    @keyframes slideIn {
+      from { transform: translateY(-50px); opacity: 0; }
+      to { transform: translateY(0); opacity: 1; }
+    }
+
+    .close {
+      color: #aaa;
+      float: right;
+      font-size: 28px;
+      font-weight: bold;
+      cursor: pointer;
+      position: absolute;
+      right: 20px;
+      top: 20px;
+    }
+
+    .close:hover {
+      color: #000;
+    }
+
+    .form-group {
+      margin-bottom: 20px;
+    }
+
+    .form-group label {
+      display: block;
+      margin-bottom: 5px;
+      font-weight: 500;
+      color: #333;
+    }
+
+    .form-group input,
+    .form-group textarea,
+    .form-group select {
+      width: 100%;
+      padding: 12px;
+      border: 1px solid #ddd;
+      border-radius: 8px;
+      font-size: 14px;
+      transition: border-color 0.3s ease;
+    }
+
+    .form-group input:focus,
+    .form-group textarea:focus,
+    .form-group select:focus {
+      outline: none;
+      border-color: #5bdab3;
+      box-shadow: 0 0 0 2px rgba(91, 218, 179, 0.2);
+    }
+
+    .form-group textarea {
+      resize: vertical;
+      min-height: 120px;
+    }
+
+    .checkbox-group {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .checkbox-group input[type="checkbox"] {
+      width: auto;
+      margin: 0;
+    }
+
+    .form-actions {
+      display: flex;
+      gap: 10px;
+      justify-content: flex-end;
+      margin-top: 20px;
+    }
+
+    .btn-submit {
+      background-color: #5bdab3;
+      color: #1e1e2f;
+      padding: 12px 24px;
+      border: none;
+      border-radius: 8px;
+      font-weight: 500;
+      cursor: pointer;
+      transition: all 0.3s ease;
+    }
+
+    .btn-submit:hover {
+      background-color: #1565c0;
+      color: white;
+    }
+
+    .btn-cancel {
+      background-color: #f5f5f5;
+      color: #333;
+      padding: 12px 24px;
+      border: none;
+      border-radius: 8px;
+      font-weight: 500;
+      cursor: pointer;
+      transition: all 0.3s ease;
+    }
+
+    .btn-cancel:hover {
+      background-color: #e0e0e0;
+    }
+
+    .no-announcements {
+      text-align: center;
+      color: #666;
+      font-size: 16px;
+      padding: 40px;
+      background: #f8f9fa;
+      border-radius: 12px;
+      border: 2px dashed #ddd;
+    }
+
+    @media (max-width: 768px) {
+      .topbar {
+        margin-bottom: 20px !important;
+      }
+      
+      .logo-title {
+        font-size: 16px !important;
+        padding: 0 80px !important;
+        text-align: center !important;
+      }
+      
+      .announcements-grid {
+        grid-template-columns: 1fr;
+      }
+      
+      .modal-content {
+        width: 95%;
+        margin: 10% auto;
+        padding: 20px;
+      }
+      
+      .announcement-card {
+        padding: 15px;
+      }
+      
+      .card-actions {
+        flex-direction: column;
+      }
+      
+      .btn-edit, .btn-delete {
+        width: 100%;
+        padding: 10px;
+      }
+      
+      .main-section {
+        padding: 20px !important;
+        margin: 0 10px !important;
+      }
+    }
+
+    @media (max-width: 480px) {
+      .logo-title {
+        font-size: 14px !important;
+      }
+    }
+  </style>
+</head>
+<body>
+  <!-- Video Background -->
+  <div class="video-background">
+    <video autoplay muted loop playsinline>
+      <source src="{% static 'media/vidbg.mp4' %}" type="video/mp4">
+      Your browser does not support the video tag.
+    </video>
+  </div>
+
+  <div class="container">
+    <!-- Top Bar -->
+    <div class="topbar">
+      <button class="rtn-btn" onclick="location.href='/admin-dashboard'"> 
+        <div class="button-box">
+          <span class="button-elem">
+            <svg viewBox="0 0 46 40" xmlns="http://www.w3.org/2000/svg">
+              <path d="M46 20.038c0-.7-.3-1.5-.8-2.1l-16-17c-1.1-1-3.2-1.4-4.4-.3-1.2 1.1-1.2 3.3 0 4.4l11.3 11.9H3c-1.7 0-3 1.3-3 3s1.3 3 3 3h33.1l-11.3 11.9c-1 1-1.2 3.3 0 4.4 1.2 1.1 3.3.8 4.4-.3l16-17c.5-.5.8-1.1.8-1.9z"></path>
+            </svg>
+          </span>
+        </div>
+      </button>
+
+      <div class="logo-title">PPMS CLUSTER 4 IMUS CITY</div>
+
+      <!-- .top-icons kept empty to preserve layout spacing -->
+      <div class="top-icons"></div>
+    </div>
+
+    <div class="greeting">Manage Announcements</div>
+
+    <div class="main-section">
+      <h2 class="section-title">Announcements Management</h2>
+      
+      <button class="add-btn" onclick="openAddModal()">+ Add New Announcement</button>
+
+      {% if announcements %}
+        <div class="announcements-grid">
+          {% for announcement in announcements %}
+            <div class="announcement-card">
+              {% if announcement.image %}
+                <div class="announcement-image">
+                  <img src="{{ announcement.image.url }}" alt="{{ announcement.title }}" style="width: 100%; height: 200px; object-fit: cover; border-radius: 8px; margin-bottom: 15px;">
+                </div>
+              {% endif %}
+              
+              <div class="announcement-title">{{ announcement.title }}</div>
+              
+              <div class="announcement-content">{{ announcement.content|truncatechars:100 }}</div>
+              
+              <div class="announcement-meta">
+                Created: {{ announcement.created_at|date:"M d, Y g:i A" }}
+                {% if announcement.updated_at != announcement.created_at %}
+                  <br>Updated: {{ announcement.updated_at|date:"M d, Y g:i A" }}
+                {% endif %}
+              </div>
+              
+              <div class="announcement-status {% if announcement.is_active %}status-active{% else %}status-inactive{% endif %}">
+                {% if announcement.is_active %}Active{% else %}Inactive{% endif %}
+              </div>
+              
+              <div class="card-actions">
+                <button class="btn-edit" onclick="openEditModal({{ announcement.id }})">Edit</button>
+                <button class="btn-delete" onclick="confirmDelete({{ announcement.id }}, '{{ announcement.title|escapejs }}')">Delete</button>
+              </div>
+            </div>
+          {% endfor %}
+        </div>
+      {% else %}
+        <div class="no-announcements">
+          <h3>No Announcements Found</h3>
+          <p>Click "Add New Announcement" to create your first announcement.</p>
+        </div>
+      {% endif %}
+    </div>
+  </div>
+
+  <!-- Add/Edit Modal -->
+  <div id="announcementModal" class="modal">
+    <div class="modal-content">
+      <span class="close" onclick="closeModal()">&times;</span>
+      <h3 id="modalTitle">Add New Announcement</h3>
+      
+      <form id="announcementForm" method="POST" enctype="multipart/form-data">
+        {% csrf_token %}
+        <input type="hidden" id="announcementId" name="announcement_id" value="">
+        
+        <div class="form-group">
+          <label for="title">Title *</label>
+          <input type="text" id="title" name="title" required>
+        </div>
+        
+        <div class="form-group">
+          <label for="content">Content *</label>
+          <textarea id="content" name="content" required placeholder="Enter announcement content..."></textarea>
+        </div>
+        
+        <div class="form-group">
+          <label for="image">Upload Image *</label>
+          <input type="file" id="image" name="image" accept="image/jpeg,image/jpg,image/png,image/gif" onchange="previewImage(this)" style="padding: 8px; border: 2px dashed #5bdab3; border-radius: 8px; background: #f8f9ff;">
+          <small style="color: #666; display: block; margin-top: 5px;">Accepted formats: JPG, JPEG, PNG, GIF (Max size: 5MB)</small>
+          <div id="imagePreview" style="margin-top: 15px; display: none; text-align: center;">
+            <p style="margin-bottom: 10px; font-weight: 500; color: #333;">Image Preview:</p>
+            <img id="previewImg" style="max-width: 100%; max-height: 250px; border-radius: 8px; border: 1px solid #ddd; box-shadow: 0 2px 8px rgba(0,0,0,0.1);">
+            <p style="margin-top: 8px; font-size: 12px; color: #666;" id="imageInfo"></p>
+          </div>
+        </div>
+        
+        <div class="form-group">
+          <div class="checkbox-group">
+            <input type="checkbox" id="is_active" name="is_active" checked>
+            <label for="is_active">Active (visible to users)</label>
+          </div>
+        </div>
+        
+        <div class="form-actions">
+          <button type="button" class="btn-cancel" onclick="closeModal()">Cancel</button>
+          <button type="submit" class="btn-submit">Save Announcement</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <script>
+    // Modal Management
+    const modal = document.getElementById('announcementModal');
+    const form = document.getElementById('announcementForm');
+    const modalTitle = document.getElementById('modalTitle');
+
+    function openAddModal() {
+      modalTitle.textContent = 'Add New Announcement';
+      form.action = '/add-announcement/';
+      document.getElementById('announcementId').value = '';
+      document.getElementById('title').value = '';
+      document.getElementById('content').value = '';
+      document.getElementById('image').value = '';
+      document.getElementById('is_active').checked = true;
+      document.getElementById('imagePreview').style.display = 'none';
+      modal.style.display = 'block';
+    }
+
+    function openEditModal(announcementId) {
+      modalTitle.textContent = 'Edit Announcement';
+      form.action = `/edit-announcement/${announcementId}/`;
+      document.getElementById('announcementId').value = announcementId;
+      
+      // Fetch announcement data
+      fetch(`/get-announcement/${announcementId}/`)
+        .then(response => response.json())
+        .then(data => {
+          if (data.status === 'success') {
+            document.getElementById('title').value = data.data.title;
+            document.getElementById('content').value = data.data.content;
+            document.getElementById('is_active').checked = data.data.is_active;
+            
+            // Show existing image if available
+            if (data.data.image_url) {
+              document.getElementById('imagePreview').style.display = 'block';
+              document.getElementById('previewImg').src = data.data.image_url;
+            } else {
+              document.getElementById('imagePreview').style.display = 'none';
+            }
+          }
+        })
+        .catch(error => {
+          console.error('Error fetching announcement data:', error);
+          Swal.fire('Error', 'Failed to load announcement data', 'error');
+        });
+      
+      modal.style.display = 'block';
+    }
+
+    function previewImage(input) {
+      const preview = document.getElementById('imagePreview');
+      const previewImg = document.getElementById('previewImg');
+      const imageInfo = document.getElementById('imageInfo');
+      
+      if (input.files && input.files[0]) {
+        const file = input.files[0];
+        
+        // Check file size (5MB limit)
+        if (file.size > 5 * 1024 * 1024) {
+          Swal.fire('Error', 'Image size should be less than 5MB', 'error');
+          input.value = '';
+          preview.style.display = 'none';
+          return;
+        }
+        
+        // Check file type
+        const allowedTypes = ['image/jpeg', 'image/jpg', 'image/png', 'image/gif'];
+        if (!allowedTypes.includes(file.type)) {
+          Swal.fire('Error', 'Please select a valid image file (JPG, JPEG, PNG, or GIF)', 'error');
+          input.value = '';
+          preview.style.display = 'none';
+          return;
+        }
+        
+        const reader = new FileReader();
+        
+        reader.onload = function(e) {
+          previewImg.src = e.target.result;
+          imageInfo.textContent = `${file.name} (${(file.size / 1024 / 1024).toFixed(2)} MB)`;
+          preview.style.display = 'block';
+        }
+        
+        reader.readAsDataURL(file);
+      } else {
+        preview.style.display = 'none';
+      }
+    }
+
+    function closeModal() {
+      modal.style.display = 'none';
+    }
+
+    function confirmDelete(announcementId, title) {
+      Swal.fire({
+        title: 'Are you sure?',
+        text: `Do you want to delete the announcement "${title}"? This action cannot be undone!`,
+        icon: 'warning',
+        showCancelButton: true,
+        confirmButtonColor: '#d33',
+        cancelButtonColor: '#3085d6',
+        confirmButtonText: 'Yes, delete it!',
+        cancelButtonText: 'Cancel'
+      }).then((result) => {
+        if (result.isConfirmed) {
+          // Create a form and submit it
+          const form = document.createElement('form');
+          form.method = 'POST';
+          form.action = `/delete-announcement/${announcementId}/`;
+          
+          const csrfToken = document.querySelector('[name=csrfmiddlewaretoken]').value;
+          const csrfInput = document.createElement('input');
+          csrfInput.type = 'hidden';
+          csrfInput.name = 'csrfmiddlewaretoken';
+          csrfInput.value = csrfToken;
+          
+          form.appendChild(csrfInput);
+          document.body.appendChild(form);
+          form.submit();
+        }
+      });
+    }
+
+    // Close modal when clicking outside
+    window.onclick = function(event) {
+      if (event.target === modal) {
+        closeModal();
+      }
+    }
+
+    // Form submission handling
+    form.addEventListener('submit', function(e) {
+      const title = document.getElementById('title').value.trim();
+      const content = document.getElementById('content').value.trim();
+      const imageInput = document.getElementById('image');
+      
+      if (!title || !content) {
+        e.preventDefault();
+        Swal.fire('Error', 'Please fill in all required fields', 'error');
+        return;
+      }
+      
+      // Check if image is required for new announcements
+      if (form.action.includes('/add-announcement/') && (!imageInput.files || imageInput.files.length === 0)) {
+        e.preventDefault();
+        Swal.fire('Error', 'Please upload an image for the announcement', 'error');
+        return;
+      }
+    });
+
+    // Display Django messages
+    {% if messages %}
+      {% for message in messages %}
+        Swal.fire({
+          title: '{% if message.tags == "success" %}Success{% elif message.tags == "error" %}Error{% else %}Info{% endif %}',
+          text: '{{ message|escapejs }}',
+          icon: '{% if message.tags == "success" %}success{% elif message.tags == "error" %}error{% else %}info{% endif %}',
+          timer: 3000,
+          showConfirmButton: false
+        });
+      {% endfor %}
+    {% endif %}
+  </script>
+</body>
+</html>
